@@ -94,14 +94,16 @@ function showUsersBySoftware(data) {
     }
   });
 
-  for (let i of [ {obj: 'usersBySoftwareDoughnut', type: 'doughnut'}, {obj: 'usersBySoftwareBar', type: 'bar'}]) {
+  const total = Object.keys(dataset).map(key => dataset[key]).reduce((partialSum, a) => partialSum + a, 0);
+
+  for (let i of [ {obj: 'usersBySoftwareDoughnut', type: 'doughnut', percent: true }, {obj: 'usersBySoftwareBar', type: 'bar', percent: false}]) {
     const ctx = document.getElementById(i.obj);
     new Chart(ctx, {
       type: i.type,
       data: {
         labels: Object.keys(dataset).sort((a,b) => dataset[a] < dataset[b]),
         datasets: [{
-          data: Object.keys(dataset).map(key => dataset[key]).sort((a,b) => a < b),
+          data: Object.keys(dataset).map(key => dataset[key]).sort((a,b) => a < b).map(a => i.percent ? (a * 100 / total) : a),
         }],
       },
       options: {
@@ -126,14 +128,16 @@ function showActiveUsersBySoftware(data) {
     }
   });
 
-  for (let i of [ {obj: 'activeUsersBySoftwareDoughnut', type: 'doughnut'}, {obj: 'activeUsersBySoftwareBar', type: 'bar'}]) {
+  const total = Object.keys(dataset).map(key => dataset[key]).reduce((partialSum, a) => partialSum + a, 0);
+
+  for (let i of [ {obj: 'activeUsersBySoftwareDoughnut', type: 'doughnut',  percent: true}, {obj: 'activeUsersBySoftwareBar', type: 'bar',  percent: false}]) {
     const ctx = document.getElementById(i.obj);
     new Chart(ctx, {
       type: i.type,
       data: {
         labels: Object.keys(dataset).sort((a,b) => dataset[a] < dataset[b]),
         datasets: [{
-          data: Object.keys(dataset).map(key => dataset[key]).sort((a,b) => a < b),
+          data: Object.keys(dataset).map(key => dataset[key]).sort((a,b) => a < b).map(a => i.percent ? (a * 100 / total) : a),
         }],
       },
       options: {
@@ -160,14 +164,16 @@ function showUsersByProtocol(data) {
     }
   });
 
-  for (let i of [ {obj: 'usersByProtocolDoughnut', type: 'doughnut'}, {obj: 'usersByProtocolBar', type: 'bar'}]) {
+  const total = Object.keys(dataset).map(key => dataset[key]).reduce((partialSum, a) => partialSum + a, 0);
+
+  for (let i of [ {obj: 'usersByProtocolDoughnut', type: 'doughnut',  percent: true}, {obj: 'usersByProtocolBar', type: 'bar',  percent: false}]) {
     const ctx = document.getElementById(i.obj);
     new Chart(ctx, {
       type: i.type,
       data: {
         labels: Object.keys(dataset).sort((a,b) => dataset[a] < dataset[b]),
         datasets: [{
-          data: Object.keys(dataset).map(key => dataset[key]).sort((a,b) => a < b),
+          data: Object.keys(dataset).map(key => dataset[key]).sort((a,b) => a < b).map(a => i.percent ? (a * 100 / total) : a),
         }],
       },
       options: {
@@ -189,14 +195,16 @@ function showUsersByInstance(data) {
     dataset[server] += parseInt(node.usage?.users?.total || 0);
   });
 
-  for (let i of [ {obj: 'usersByInstanceDoughnut', type: 'doughnut'}, {obj: 'usersByInstanceBar', type: 'bar'}]) {
+  const total = Object.keys(dataset).map(key => dataset[key]).reduce((partialSum, a) => partialSum + a, 0);
+
+  for (let i of [ {obj: 'usersByInstanceDoughnut', type: 'doughnut',  percent: true}, {obj: 'usersByInstanceBar', type: 'bar',  percent: false}]) {
     const ctx = document.getElementById(i.obj);
     new Chart(ctx, {
       type: i.type,
       data: {
         labels: Object.keys(dataset).sort((a,b) => dataset[a] < dataset[b]),
         datasets: [{
-          data: Object.keys(dataset).map(key => dataset[key]).sort((a,b) => a < b),
+          data: Object.keys(dataset).map(key => dataset[key]).sort((a,b) => a < b).map(a => i.percent ? (a * 100 / total) : a),
         }],
       },
       options: {
@@ -220,14 +228,16 @@ function showSoftwaresByInstance(data) {
     }
   });
 
-  for (let i of [ {obj: 'softwareByInstanceDoughnut', type: 'doughnut'}, {obj: 'softwareByInstanceBar', type: 'bar'}]) {
+  const total = Object.keys(dataset).map(key => dataset[key]).reduce((partialSum, a) => partialSum + a, 0);
+
+  for (let i of [ {obj: 'softwareByInstanceDoughnut', type: 'doughnut',  percent: true}, {obj: 'softwareByInstanceBar', type: 'bar', percent: false}]) {
     const ctx = document.getElementById(i.obj);
     new Chart(ctx, {
       type: i.type,
       data: {
         labels: Object.keys(dataset).sort((a,b) => dataset[a] < dataset[b]),
         datasets: [{
-          data: Object.keys(dataset).map(key => dataset[key]).sort((a,b) => a < b),
+          data: Object.keys(dataset).map(key => dataset[key]).sort((a,b) => a < b).map(a => i.percent ? (a * 100 / total) : a),
         }],
       },
       options: {
