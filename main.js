@@ -5,6 +5,45 @@ class Stats {
     fetch("./LOG.json").then(r => r.json()).then(data => this._showData(data));
   }
 
+  usersBySoftwareReport() {
+    this._createCanvas();
+    this._showUsersBySoftware('modalDoughnut', 'modalReport', false);
+    new bootstrap.Modal('#chartModal', {}).show();
+  }
+
+  activeUsersBySoftwareReport() {
+    this._createCanvas();
+    this._showActiveUsersBySoftware('modalDoughnut', 'modalReport', false);
+    new bootstrap.Modal('#chartModal', {}).show();
+  }
+
+  usersByProtocolReport() {
+    this._createCanvas();
+    this._showUsersByProtocol('modalDoughnut', 'modalReport', false);
+    new bootstrap.Modal('#chartModal', {}).show();
+  }
+
+  usersByInstanceReport() {
+    this._createCanvas();
+    this._showUsersByInstance('modalDoughnut', 'modalReport', false);
+    new bootstrap.Modal('#chartModal', {}).show();
+  }
+
+  softwareByInstanceReport() {
+    this._createCanvas();
+    this._showSoftwaresByInstance('modalDoughnut', 'modalReport', false);
+    new bootstrap.Modal('#chartModal', {}).show();
+  }
+
+  _createCanvas() {
+    const div = document.getElementById("modalCanvas");
+    while (div.firstChild) div.firstChild.remove();
+
+    const canvas = document.createElement("canvas");
+    canvas.setAttribute('id', 'modalDoughnut');
+    div.appendChild(canvas);
+  }
+
   _showData(data) {
     delete data['egirls.gay'];
 
@@ -12,13 +51,15 @@ class Stats {
     this._totalServers = Object.keys(data).length;
     this._totalMAU = Object.keys(data).map(key => parseInt(data[key].nodeInfo.usage?.users?.activeMonth || 0)).reduce((partialSum, a) => partialSum + a, 0);
 
+    this._data = data;
+
     this._updateStats();
-    this._showUsersBySoftware(data);
-    this._showActiveUsersBySoftware(data);
-    this._showUsersByProtocol(data);
-    this._showUsersByInstance(data);
-    this._showSoftwaresByInstance(data);
-    this._showMastodonPublicTimeline(data);
+    this._showUsersBySoftware('usersBySoftwareDoughnut', 'usersBySoftwareReport', true);
+    this._showActiveUsersBySoftware("activeUsersBySoftwareDoughnut", "activeUsersBySoftwareReport", true);
+    this._showUsersByProtocol("usersByProtocolDoughnut", "usersByProtocolReport", true);
+    this._showUsersByInstance("usersByInstanceDoughnut", "usersByInstanceReport", true);
+    this._showSoftwaresByInstance("softwareByInstanceDoughnut", "softwareByInstanceReport", true);
+    this._showMastodonPublicTimeline("mastodonPublicTimelineDoughnut", "mastodonPublicTimelineReport");
   }
 
   _updateStats() {
@@ -27,91 +68,105 @@ class Stats {
     document.getElementById("totalMAU").innerText = this._intl.format(this._totalMAU);
   }
 
-  _showUsersBySoftware(data) {
+  _showUsersBySoftware(id1, id2, round) {
     const dataset = {};
-    Object.keys(data).forEach(server => {
-      const node = data[server].nodeInfo;
+    Object.keys(this._data).forEach(server => {
+      const node = this._data[server].nodeInfo;
       if (node.software?.name) {
-        if (!dataset[node.software.name]) { dataset[node.software.name] = 0; }
+        if (!dataset[node.software.name]) {
+          dataset[node.software.name] = 0;
+        }
         dataset[node.software.name] += parseInt(node.usage?.users?.total || 0);
       }
     });
 
-    this._renderData(dataset, 'usersBySoftwareDoughnut', 'usersBySoftwareReport');
+    this._renderData(dataset, id1, id2, round);
   }
 
-  _showActiveUsersBySoftware(data) {
+  _showActiveUsersBySoftware(id1, id2, round) {
     const dataset = {};
-    Object.keys(data).forEach(server => {
-      const node = data[server].nodeInfo;
+    Object.keys(this._data).forEach(server => {
+      const node = this._data[server].nodeInfo;
       if (node.software?.name) {
-        if (!dataset[node.software.name]) { dataset[node.software.name] = 0; }
+        if (!dataset[node.software.name]) {
+          dataset[node.software.name] = 0;
+        }
 
         dataset[node.software.name] += parseInt(node.usage?.users?.activeMonth || 0);
       }
     });
 
-    this._renderData(dataset, "activeUsersBySoftwareDoughnut", "activeUsersBySoftwareReport",);
+    this._renderData(dataset, id1, id2, round);
   }
 
-  _showUsersByProtocol(data) {
+  _showUsersByProtocol(id1, id2, round) {
     const dataset = {};
-    Object.keys(data).forEach(server => {
-      const node = data[server].nodeInfo;
-      if (!Array.isArray(node.protocols)) { return; }
-     
+    Object.keys(this._data).forEach(server => {
+      const node = this._data[server].nodeInfo;
+      if (!Array.isArray(node.protocols)) {
+        return;
+      }
+
       for (let protocol of node.protocols) {
-        if (!dataset[protocol]) { dataset[protocol] = 0; }
+        if (!dataset[protocol]) {
+          dataset[protocol] = 0;
+        }
 
         dataset[protocol] += parseInt(node.usage?.users?.total || 0);
       }
     });
 
-    this._renderData(dataset, "usersByProtocolDoughnut", "usersByProtocolReport");
+    this._renderData(dataset, id1, id2, round);
   }
 
-  _showUsersByInstance(data) {
+  _showUsersByInstance(id1, id2, round) {
     const dataset = {};
-    Object.keys(data).forEach(server => {
-      const node = data[server].nodeInfo;
+    Object.keys(this._data).forEach(server => {
+      const node = this._data[server].nodeInfo;
       if (!dataset[server]) dataset[server] = 0;
       dataset[server] += parseInt(node.usage?.users?.total || 0);
     });
 
-    this._renderData(dataset, "usersByInstanceDoughnut", "usersByInstanceReport");
+    this._renderData(dataset, id1, id2, round);
   }
 
-  _showSoftwaresByInstance(data) {
+  _showSoftwaresByInstance(id1, id2, round) {
     const dataset = {};
-    Object.keys(data).forEach(server => {
-      const node = data[server].nodeInfo;
+    Object.keys(this._data).forEach(server => {
+      const node = this._data[server].nodeInfo;
       if (node.software?.name) {
-        if (!dataset[node.software.name]) { dataset[node.software.name] = 0; }
+        if (!dataset[node.software.name]) {
+          dataset[node.software.name] = 0;
+        }
         dataset[node.software.name] += 1;
       }
     });
 
-    this._renderData(dataset, "softwareByInstanceDoughnut", "softwareByInstanceReport");
+    this._renderData(dataset, id1, id2, round);
   }
 
-  _showMastodonPublicTimeline(data) {
-    const dataset = { public: 0, private: 0};
-    Object.keys(data).forEach(server => {
-      const node = data[server];
+  _showMastodonPublicTimeline(id1, id2) {
+    const dataset = {
+      public: 0,
+      private: 0
+    };
+    Object.keys(this._data).forEach(server => {
+      const node = this._data[server];
       if ("mastodon_public" in node) {
-        if (node.mastodon_public) dataset.public += 1; else dataset.private += 1;
+        if (node.mastodon_public) dataset.public += 1;
+        else dataset.private += 1;
       }
     });
 
-    this._renderData(dataset, "mastodonPublicTimelineDoughnut", "mastodonPublicTimelineReport", 2);
+    this._renderData(dataset, id1, id2, false);
   }
 
-  _renderData(dataset, id1, id2) {
-    const labels = Object.keys(dataset).sort((a,b) => dataset[a] < dataset[b]);
-    let datasets = Object.keys(dataset).map(key => dataset[key]).sort((a,b) => a < b);
+  _renderData(dataset, id1, id2, round) {
+    const labels = Object.keys(dataset).sort((a, b) => dataset[a] < dataset[b]);
+    let datasets = Object.keys(dataset).map(key => dataset[key]).sort((a, b) => a < b);
     const total = datasets.reduce((partialSum, a) => partialSum + a, 0);
 
-    if (labels.length > 10) {
+    if (round && labels.length > 10) {
       labels.splice(9);
       labels.push("Others");
 
@@ -120,14 +175,16 @@ class Stats {
       datasets.push(others);
     }
 
-    datasets = datasets.map(a => a* 100 / total);
+    datasets = datasets.map(a => a * 100 / total);
 
     const ctx = document.getElementById(id1);
     const chart = new Chart(ctx, {
       type: 'doughnut',
       data: {
         labels,
-        datasets: [{ data: datasets }],
+        datasets: [{
+          data: datasets
+        }],
       },
       options: {
         plugins: {
@@ -162,50 +219,4 @@ class Stats {
   }
 }
 
-new Stats();
-
-
-function renderData(dataset, id1, id2, tops) {
-  const total = Object.keys(dataset).map(key => dataset[key]).reduce((partialSum, a) => partialSum + a, 0);
-  const labels = Object.keys(dataset).sort((a,b) => dataset[a] < dataset[b]);
-  const datasets = Object.keys(dataset).map(key => dataset[key]).sort((a,b) => a < b);
-  const datasets_percent = datasets.map(a => a * 100 / total);
-
-  const ctx = document.getElementById(id1);
-  const chart = new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-      labels,
-      datasets: [{ data: datasets_percent }],
-    },
-    options: {
-      scales: {
-        y: {
-          beginAtZero: true
-        }
-      }
-    }
-  });
-
-  chart.canvas.parentNode.style.height = '500px';
-  chart.canvas.parentNode.style.width = '500px';
-
-  const intl = new Intl.NumberFormat();
-  const reports = {
-    "Total": intl.format(total),
-  }
-
-  for (let i = 0; i < tops; ++i) {
-    reports[`Top ${i+1}`] = `${labels[i]} - ${intl.format(datasets[i])} (${Math.round(datasets_percent[i])}%)`;
-  };
-
-  const ul = document.createElement('ul');
-  document.getElementById(id2).appendChild(ul);
-
-  for (const key of Object.keys(reports)) {
-    const li = document.createElement('li');
-    li.appendChild(document.createTextNode(`${key}: ${reports[key]}`));
-    ul.appendChild(li);
-  }
-}
-
+const stats = new Stats();
