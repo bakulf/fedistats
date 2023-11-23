@@ -1,224 +1,119 @@
 <html>
 <head>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+  <meta charset="utf-8">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <link href="main.css" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="Fediverse Network Statistics">
 </head>
+
 <body>
+
 <div class="container">
+  <div class="row">
+    <h1>Some stats about the Fediverse</h1>
+    <p>Stats generated querying fediverse nodes listed on https://nodes.fediverse.party</p>
+  </div>
 
-<h1>Some stats about the Fediverse</h1>
-<p>Stats generated querying fediverse nodes listed on https://nodes.fediverse.party</p>
+  <div class="row">
+    <div class="col-sm-4 mb-3">
+      <div class="card">
+        <div class="card-header">Total users</div>
+        <div class="card-body">
+          <p class="card-text" id="totalUsers"><span class="lds-circle"><span></span></span></p>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-4 mb-3">
+      <div class="card">
+        <div class="card-header">Total servers</div>
+        <div class="card-body">
+          <p class="card-text" id="totalServers"><span class="lds-circle"><span></span></span></p>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-4 mb-3">
+      <div class="card">
+        <div class="card-header">Total MAU</div>
+        <div class="card-body">
+          <p class="card-text" id="totalMAU"><span class="lds-circle"><span></span></span></p>
+        </div>
+      </div>
+    </div>
+  </div>
 
-<ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-  <li class="nav-item" role="presentation">
-    <button class="nav-link active" id="pills-usersBySoftware-tab" data-bs-toggle="pill" data-bs-target="#pills-usersBySoftware" type="button" role="tab" aria-controls="pills-usersBySoftware" aria-selected="true">#users by software</button>
-  </li>
-  <li class="nav-item" role="presentation">
-    <button class="nav-link" id="pills-activeUsersBySoftware-tab" data-bs-toggle="pill" data-bs-target="#pills-activeUsersBySoftware" type="button" role="tab" aria-controls="pills-activeUsersBySoftware" aria-selected="false">#active users by software</button>
-  </li>
-  <li class="nav-item" role="presentation">
-    <button class="nav-link" id="pills-usersByProtocol-tab" data-bs-toggle="pill" data-bs-target="#pills-usersByProtocol" type="button" role="tab" aria-controls="pills-usersByProtocol" aria-selected="false">#users by protocol</button>
-  </li>
-  <li class="nav-item" role="presentation">
-    <button class="nav-link" id="pills-usersByInstance-tab" data-bs-toggle="pill" data-bs-target="#pills-usersByInstance" type="button" role="tab" aria-controls="pills-usersByInstance" aria-selected="false">#users by server</button>
-  </li>
-  <li class="nav-item" role="presentation">
-    <button class="nav-link" id="pills-softwareByInstance-tab" data-bs-toggle="pill" data-bs-target="#pills-softwareByInstance" type="button" role="tab" aria-controls="pills-softwareByInstance" aria-selected="false">#softwares by instance</button>
-  </li>
-  <li class="nav-item" role="presentation">
-    <button class="nav-link" id="pills-mastodonPublicTimeline-tab" data-bs-toggle="pill" data-bs-target="#pills-mastodonPublicTimeline" type="button" role="tab" aria-controls="pills-mastodonPublicTimeline" aria-selected="false">%mastodon public timeline</button>
-  </li>
-</ul>
+  <div class="row">
+    <div class="col-sm-4 mb-3">
+      <div class="card">
+        <div class="card-header">Software usage</div>
 
-<div class="tab-content" id="pills-tabContent">
-  <div class="tab-pane fade show active" id="pills-usersBySoftware" role="tabpanel" aria-labelledby="pills-usersBySoftware-tab">
-    <div class="container">
-      <div class="row">
-        <div class="col"><canvas id="usersBySoftwareDoughnut"></canvas></div>
-        <div class="col" id="usersBySoftwareReport"></div>
+        <div class="card-img-top"><canvas id="usersBySoftwareDoughnut"></canvas></div>
+        <div class="card-body">
+          <p class="card-text" id="usersBySoftwareReport"><span class="lds-circle"><span></span></span></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-4 mb-3">
+      <div class="card">
+        <div class="card-header">Software active usage</div>
+
+        <div class="card-img-top"><canvas id="activeUsersBySoftwareDoughnut"></canvas></div>
+        <div class="card-body">
+          <p class="card-text" id="activeUsersBySoftwareReport"><span class="lds-circle"><span></span></span></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-4 mb-3">
+      <div class="card">
+        <div class="card-header">Protocol usage</div>
+
+        <div class="card-img-top"><canvas id="usersByProtocolDoughnut"></canvas></div>
+        <div class="card-body">
+          <p class="card-text" id="usersByProtocolReport"><span class="lds-circle"><span></span></span></p>
+        </div>
       </div>
     </div>
   </div>
-  <div class="tab-pane fade" id="pills-activeUsersBySoftware" role="tabpanel" aria-labelledby="pills-activeUsersBySoftware-tab">
-    <div class="container">
-      <div class="row">
-        <div class="col"><canvas id="activeUsersBySoftwareDoughnut"></canvas></div>
-        <div class="col" id="activeUsersBySoftwareReport"></div>
+
+  <div class="row">
+    <div class="col-sm-4 mb-3">
+      <div class="card">
+        <div class="card-header">Instance usage</div>
+
+        <div class="card-img-top"><canvas id="usersByInstanceDoughnut"></canvas></div>
+        <div class="card-body">
+          <p class="card-text" id="usersByInstanceReport"><span class="lds-circle"><span></span></span></p>
+        </div>
       </div>
     </div>
-  </div>
-  <div class="tab-pane fade" id="pills-usersByProtocol" role="tabpanel" aria-labelledby="pills-usersByProtocol-tab">
-    <div class="container">
-      <div class="row">
-        <div class="col"><canvas id="usersByProtocolDoughnut"></canvas></div>
-        <div class="col" id="usersByProtocolReport"></div>
+    <div class="col-sm-4 mb-3">
+      <div class="card">
+        <div class="card-header">Software per instance</div>
+
+        <div class="card-img-top"><canvas id="softwareByInstanceDoughnut"></canvas></div>
+        <div class="card-body">
+          <p class="card-text" id="softwareByInstanceReport"><span class="lds-circle"><span></span></span></p>
+        </div>
       </div>
     </div>
-  </div>
-  <div class="tab-pane fade" id="pills-usersByInstance" role="tabpanel" aria-labelledby="pills-usersByInstance-tab">
-    <div class="container">
-      <div class="row">
-        <div class="col"><canvas id="usersByInstanceDoughnut"></canvas></div>
-        <div class="col" id="usersByInstanceReport"></div>
-      </div>
-    </div>
-  </div>
-  <div class="tab-pane fade" id="pills-softwareByInstance" role="tabpanel" aria-labelledby="pills-softwareByInstance-tab">
-    <div class="container">
-      <div class="row">
-        <div class="col"><canvas id="softwareByInstanceDoughnut"></canvas></div>
-        <div class="col" id="softwareByInstanceReport"></div>
-      </div>
-    </div>
-  </div>
-  <div class="tab-pane fade" id="pills-mastodonPublicTimeline" role="tabpanel" aria-labelledby="pills-mastodonPublicTimeline-tab">
-    <div class="container">
-      <div class="row">
-        <div class="col"><canvas id="mastodonPublicTimelineDoughnut"></canvas></div>
-        <div class="col" id="mastodonPublicTimelineReport"></div>
+
+    <div class="col-sm-4 mb-3">
+      <div class="card">
+        <div class="card-header">Private vs Public</div>
+
+        <div class="card-img-top"><canvas id="mastodonPublicTimelineDoughnut"></canvas></div>
+        <div class="card-body">
+          <p class="card-text" id="mastodonPublicTimelineReport"><span class="lds-circle"><span></span></span></p>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-fetch("./LOG.json").then(r => r.json()).then(data => showData(data));
-
-function showData(data) {
-  delete data['egirls.gay'];
-
-  showUsersBySoftware(data);
-  showActiveUsersBySoftware(data);
-  showUsersByProtocol(data);
-  showUsersByInstance(data);
-  showSoftwaresByInstance(data);
-  showMastodonPublicTimeline(data);
-}
-
-function showUsersBySoftware(data) {
-  const dataset = {};
-  Object.keys(data).forEach(server => {
-    const node = data[server].nodeInfo;
-    if (node.software?.name) {
-      if (!dataset[node.software.name]) { dataset[node.software.name] = 0; }
-      dataset[node.software.name] += parseInt(node.usage?.users?.total || 0);
-    }
-  });
-
-  renderData(dataset, 'usersBySoftwareDoughnut', 'usersBySoftwareReport', 3);
-}
-
-
-function showActiveUsersBySoftware(data) {
-  const dataset = {};
-  Object.keys(data).forEach(server => {
-    const node = data[server].nodeInfo;
-    if (node.software?.name) {
-      if (!dataset[node.software.name]) { dataset[node.software.name] = 0; }
-
-      dataset[node.software.name] += parseInt(node.usage?.users?.activeMonth || 0);
-    }
-  });
-
-  renderData(dataset, "activeUsersBySoftwareDoughnut", "activeUsersBySoftwareReport", 3);
-}
-
-function showUsersByProtocol(data) {
-  const dataset = {};
-  Object.keys(data).forEach(server => {
-    const node = data[server].nodeInfo;
-    if (!Array.isArray(node.protocols)) { return; }
-   
-    for (let protocol of node.protocols) {
-      if (!dataset[protocol]) { dataset[protocol] = 0; }
-
-      dataset[protocol] += parseInt(node.usage?.users?.total || 0);
-    }
-  });
-
-  renderData(dataset, "usersByProtocolDoughnut", "usersByProtocolReport", 3);
-}
-
-function showUsersByInstance(data) {
-  const dataset = {};
-  Object.keys(data).forEach(server => {
-    const node = data[server].nodeInfo;
-    if (!dataset[server]) dataset[server] = 0;
-    dataset[server] += parseInt(node.usage?.users?.total || 0);
-  });
-
-  renderData(dataset, "usersByInstanceDoughnut", "usersByInstanceReport", 3);
-}
-
-function showSoftwaresByInstance(data) {
-  const dataset = {};
-  Object.keys(data).forEach(server => {
-    const node = data[server].nodeInfo;
-    if (node.software?.name) {
-      if (!dataset[node.software.name]) { dataset[node.software.name] = 0; }
-      dataset[node.software.name] += 1;
-    }
-  });
-
-  renderData(dataset, "softwareByInstanceDoughnut", "softwareByInstanceReport", 3);
-}
-
-function showMastodonPublicTimeline(data) {
-  const dataset = { public: 0, private: 0};
-  Object.keys(data).forEach(server => {
-    const node = data[server];
-    if ("mastodon_public" in node) {
-      if (node.mastodon_public) dataset.public += 1; else dataset.private += 1;
-    }
-  });
-
-  renderData(dataset, "mastodonPublicTimelineDoughnut", "mastodonPublicTimelineReport", 2);
-}
-
-function renderData(dataset, id1, id2, tops) {
-  const total = Object.keys(dataset).map(key => dataset[key]).reduce((partialSum, a) => partialSum + a, 0);
-  const labels = Object.keys(dataset).sort((a,b) => dataset[a] < dataset[b]);
-  const datasets = Object.keys(dataset).map(key => dataset[key]).sort((a,b) => a < b);
-  const datasets_percent = datasets.map(a => a * 100 / total);
-
-  const ctx = document.getElementById(id1);
-  const chart = new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-      labels,
-      datasets: [{ data: datasets_percent }],
-    },
-    options: {
-      scales: {
-        y: {
-          beginAtZero: true
-        }
-      }
-    }
-  });
-
-  chart.canvas.parentNode.style.height = '500px';
-  chart.canvas.parentNode.style.width = '500px';
-
-  const intl = new Intl.NumberFormat();
-  const reports = {
-    "Total": intl.format(total),
-  }
-
-  for (let i = 0; i < tops; ++i) {
-    reports[`Top ${i+1}`] = `${labels[i]} - ${intl.format(datasets[i])} (${Math.round(datasets_percent[i])}%)`;
-  };
-
-  const ul = document.createElement('ul');
-  document.getElementById(id2).appendChild(ul);
-
-  for (const key of Object.keys(reports)) {
-    const li = document.createElement('li');
-    li.appendChild(document.createTextNode(`${key}: ${reports[key]}`));
-    ul.appendChild(li);
-  }
-}
-</script>
+<script src="main.js"></script>
 </body>
 </html>

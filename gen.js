@@ -65,7 +65,7 @@ async function magic() {
   const servers = await fetch("https://nodes.fediverse.party/nodes.json").then(r => r.json());
 
   const p = [];
-  for (let i = 0; i < 15; ++i) {
+  for (let i = 0; i < 25; ++i) {
     p.push(worker(servers));
   }
 
