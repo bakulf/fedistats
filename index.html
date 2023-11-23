@@ -32,7 +32,7 @@
     <div class="container">
       <div class="row">
         <div class="col"><canvas id="usersBySoftwareDoughnut"></canvas></div>
-        <div class="col"><canvas id="usersBySoftwareBar"></canvas></div>
+        <div class="col" id="usersBySoftwareReport"></div>
       </div>
     </div>
   </div>
@@ -40,7 +40,7 @@
     <div class="container">
       <div class="row">
         <div class="col"><canvas id="activeUsersBySoftwareDoughnut"></canvas></div>
-        <div class="col"><canvas id="activeUsersBySoftwareBar"></canvas></div>
+        <div class="col" id="activeUsersBySoftwareReport"></div>
       </div>
     </div>
   </div>
@@ -48,7 +48,7 @@
     <div class="container">
       <div class="row">
         <div class="col"><canvas id="usersByProtocolDoughnut"></canvas></div>
-        <div class="col"><canvas id="usersByProtocolBar"></canvas></div>
+        <div class="col" id="usersByProtocolReport"></div>
       </div>
     </div>
   </div>
@@ -56,7 +56,7 @@
     <div class="container">
       <div class="row">
         <div class="col"><canvas id="usersByInstanceDoughnut"></canvas></div>
-        <div class="col"><canvas id="usersByInstanceBar"></canvas></div>
+        <div class="col" id="usersByInstanceReport"></div>
       </div>
     </div>
   </div>
@@ -64,7 +64,7 @@
     <div class="container">
       <div class="row">
         <div class="col"><canvas id="softwareByInstanceDoughnut"></canvas></div>
-        <div class="col"><canvas id="softwareByInstanceBar"></canvas></div>
+        <div class="col" id="softwareByInstanceReport"></div>
       </div>
     </div>
   </div>
@@ -94,28 +94,9 @@ function showUsersBySoftware(data) {
     }
   });
 
-  const total = Object.keys(dataset).map(key => dataset[key]).reduce((partialSum, a) => partialSum + a, 0);
-
-  for (let i of [ {obj: 'usersBySoftwareDoughnut', type: 'doughnut', percent: true }, {obj: 'usersBySoftwareBar', type: 'bar', percent: false}]) {
-    const ctx = document.getElementById(i.obj);
-    new Chart(ctx, {
-      type: i.type,
-      data: {
-        labels: Object.keys(dataset).sort((a,b) => dataset[a] < dataset[b]),
-        datasets: [{
-          data: Object.keys(dataset).map(key => dataset[key]).sort((a,b) => a < b).map(a => i.percent ? (a * 100 / total) : a),
-        }],
-      },
-      options: {
-        scales: {
-          y: {
-            beginAtZero: true
-          }
-        }
-      }
-    });
-  }
+  renderData(dataset, 'usersBySoftwareDoughnut', 'usersBySoftwareReport');
 }
+
 
 function showActiveUsersBySoftware(data) {
   const dataset = {};
@@ -128,27 +109,7 @@ function showActiveUsersBySoftware(data) {
     }
   });
 
-  const total = Object.keys(dataset).map(key => dataset[key]).reduce((partialSum, a) => partialSum + a, 0);
-
-  for (let i of [ {obj: 'activeUsersBySoftwareDoughnut', type: 'doughnut',  percent: true}, {obj: 'activeUsersBySoftwareBar', type: 'bar',  percent: false}]) {
-    const ctx = document.getElementById(i.obj);
-    new Chart(ctx, {
-      type: i.type,
-      data: {
-        labels: Object.keys(dataset).sort((a,b) => dataset[a] < dataset[b]),
-        datasets: [{
-          data: Object.keys(dataset).map(key => dataset[key]).sort((a,b) => a < b).map(a => i.percent ? (a * 100 / total) : a),
-        }],
-      },
-      options: {
-        scales: {
-          y: {
-            beginAtZero: true
-          }
-        }
-      }
-    });
-  }
+  renderData(dataset, "activeUsersBySoftwareDoughnut", "activeUsersBySoftwareReport");
 }
 
 function showUsersByProtocol(data) {
@@ -164,27 +125,7 @@ function showUsersByProtocol(data) {
     }
   });
 
-  const total = Object.keys(dataset).map(key => dataset[key]).reduce((partialSum, a) => partialSum + a, 0);
-
-  for (let i of [ {obj: 'usersByProtocolDoughnut', type: 'doughnut',  percent: true}, {obj: 'usersByProtocolBar', type: 'bar',  percent: false}]) {
-    const ctx = document.getElementById(i.obj);
-    new Chart(ctx, {
-      type: i.type,
-      data: {
-        labels: Object.keys(dataset).sort((a,b) => dataset[a] < dataset[b]),
-        datasets: [{
-          data: Object.keys(dataset).map(key => dataset[key]).sort((a,b) => a < b).map(a => i.percent ? (a * 100 / total) : a),
-        }],
-      },
-      options: {
-        scales: {
-          y: {
-            beginAtZero: true
-          }
-        }
-      }
-    });
-  }
+  renderData(dataset, "usersByProtocolDoughnut", "usersByProtocolReport");
 }
 
 function showUsersByInstance(data) {
@@ -195,27 +136,7 @@ function showUsersByInstance(data) {
     dataset[server] += parseInt(node.usage?.users?.total || 0);
   });
 
-  const total = Object.keys(dataset).map(key => dataset[key]).reduce((partialSum, a) => partialSum + a, 0);
-
-  for (let i of [ {obj: 'usersByInstanceDoughnut', type: 'doughnut',  percent: true}, {obj: 'usersByInstanceBar', type: 'bar',  percent: false}]) {
-    const ctx = document.getElementById(i.obj);
-    new Chart(ctx, {
-      type: i.type,
-      data: {
-        labels: Object.keys(dataset).sort((a,b) => dataset[a] < dataset[b]),
-        datasets: [{
-          data: Object.keys(dataset).map(key => dataset[key]).sort((a,b) => a < b).map(a => i.percent ? (a * 100 / total) : a),
-        }],
-      },
-      options: {
-        scales: {
-          y: {
-            beginAtZero: true
-          }
-        }
-      }
-    });
-  }
+  renderData(dataset, "usersByInstanceDoughnut", "usersByInstanceReport");
 }
 
 function showSoftwaresByInstance(data) {
@@ -228,26 +149,49 @@ function showSoftwaresByInstance(data) {
     }
   });
 
-  const total = Object.keys(dataset).map(key => dataset[key]).reduce((partialSum, a) => partialSum + a, 0);
+  renderData(dataset, "softwareByInstanceDoughnut", "softwareByInstanceReport");
+}
 
-  for (let i of [ {obj: 'softwareByInstanceDoughnut', type: 'doughnut',  percent: true}, {obj: 'softwareByInstanceBar', type: 'bar', percent: false}]) {
-    const ctx = document.getElementById(i.obj);
-    new Chart(ctx, {
-      type: i.type,
-      data: {
-        labels: Object.keys(dataset).sort((a,b) => dataset[a] < dataset[b]),
-        datasets: [{
-          data: Object.keys(dataset).map(key => dataset[key]).sort((a,b) => a < b).map(a => i.percent ? (a * 100 / total) : a),
-        }],
-      },
-      options: {
-        scales: {
-          y: {
-            beginAtZero: true
-          }
+function renderData(dataset, id1, id2) {
+  const total = Object.keys(dataset).map(key => dataset[key]).reduce((partialSum, a) => partialSum + a, 0);
+  const labels = Object.keys(dataset).sort((a,b) => dataset[a] < dataset[b]);
+  const datasets = Object.keys(dataset).map(key => dataset[key]).sort((a,b) => a < b);
+  const datasets_percent = datasets.map(a => a * 100 / total);
+
+  const ctx = document.getElementById(id1);
+  const chart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels,
+      datasets: [{ data: datasets_percent }],
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true
         }
       }
-    });
+    }
+  });
+
+  chart.canvas.parentNode.style.height = '500px';
+  chart.canvas.parentNode.style.width = '500px';
+
+  const intl = new Intl.NumberFormat();
+  const reports = {
+    "Total": intl.format(total),
+    "Top 1": `${labels[0]} - ${intl.format(datasets[0])} (${Math.round(datasets_percent[0])}%)`,
+    "Top 2": `${labels[1]} - ${intl.format(datasets[1])} (${Math.round(datasets_percent[1])}%)`,
+    "Top 3": `${labels[2]} - ${intl.format(datasets[2])} (${Math.round(datasets_percent[2])}%)`,
+  };
+
+  const ul = document.createElement('ul');
+  document.getElementById(id2).appendChild(ul);
+
+  for (const key of Object.keys(reports)) {
+    const li = document.createElement('li');
+    li.appendChild(document.createTextNode(`${key}: ${reports[key]}`));
+    ul.appendChild(li);
   }
 }
 </script>
