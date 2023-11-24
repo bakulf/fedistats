@@ -20,7 +20,13 @@ jobs:
       - name: Run
         shell: bash
         run: |
-          node gen.js
+          date > LOG.json
+          #node gen.js
 
       - name: Commit
-        uses: stefanzweifel/git-auto-commit-action@v5
+        run: |
+          git config --global user.name "Andrea Marchesini"
+          git config --global user.email "baku@mozilla.com"
+          git add LOG.json pre.json
+          git commit -m "Stats updated"
+          git push -fq origin main
