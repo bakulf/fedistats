@@ -4,10 +4,15 @@ on:
   schedule:
     - cron: '0 0 * * *'
 
+permissions:
+  contents: write
+
 jobs:
   gen:
     name: Gen DB
     runs-on: ubuntu-22.04
+    env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Clone repository
         uses: actions/checkout@v3
@@ -27,6 +32,8 @@ jobs:
         run: |
           git config --global user.name "Andrea Marchesini"
           git config --global user.email "baku@mozilla.com"
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY
+          git checkout "${GITHUB_REF:11}"
           git add LOG.json pre.json
           git commit -m "Stats updated"
-          git push -fq origin main
+          git push 
