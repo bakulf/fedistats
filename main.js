@@ -57,6 +57,7 @@ class Stats {
     this._renderData(data.usersByInstance, "usersByInstanceDoughnut", "usersByInstanceReport", true);
     this._renderData(data.softwareByInstance, "softwareByInstanceDoughnut", "softwareByInstanceReport", true);
     this._renderData(data.mastodonPublicTimeline, "mastodonPublicTimelineDoughnut", "mastodonPublicTimelineReport");
+    this._renderData(data.userDistribution, "userDistributionDoughnut", "userDistributionReport");
   }
 
   _renderData(dataset, id1, id2, round) {

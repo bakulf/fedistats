@@ -16,6 +16,7 @@ class Stats {
       usersByInstance: this._showUsersByInstance(data),
       softwareByInstance: this._showSoftwaresByInstance(data),
       mastodonPublicTimeline: this._showMastodonPublicTimeline(data),
+      userDistribution: this._showUserDistribution(data),
     }
 
     fs.writeFileSync("pre.json", JSON.stringify(report));
@@ -105,6 +106,25 @@ class Stats {
         if (node.mastodon_public) dataset.public += 1;
         else dataset.private += 1;
       }
+    });
+    return dataset;
+  }
+
+  _showUserDistribution(data) {
+    const dataset = {
+      "up to 1": 0,
+      "up to 10": 0,
+      "up to 100": 0,
+      "up to 1000": 0,
+      "more than 1000": 0,
+    };
+    Object.keys(data).forEach(server => {
+      const node = data[server].nodeInfo;
+      if (data[server].nodeInfo.usage?.users?.total <= 1) dataset["up to 1"] += 1;
+      else if (data[server].nodeInfo.usage?.users?.total <= 10) dataset["up to 10"] += 1;
+      else if (data[server].nodeInfo.usage?.users?.total <= 100) dataset["up to 100"] += 1;
+      else if (data[server].nodeInfo.usage?.users?.total <= 1000) dataset["up to 1000"] += 1;
+      else dataset["more than 1000"] += 1;
     });
     return dataset;
   }

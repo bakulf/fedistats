@@ -70,8 +70,6 @@ async function magic() {
   }
 
   await Promise.all(p);
-
-  console.log(report);
 }
 
 magic()
