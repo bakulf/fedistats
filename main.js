@@ -2,36 +2,36 @@ class Stats {
   constructor() {
     this._intl = new Intl.NumberFormat();
 
-    fetch("./LOG.json").then(r => r.json()).then(data => this._showData(data));
+    fetch("./pre.json").then(r => r.json()).then(data => this._showData(data));
   }
 
   usersBySoftwareReport() {
     this._createCanvas();
-    this._showUsersBySoftware('modalDoughnut', 'modalReport', false);
+    this._renderData(this._data.usersBySoftware, 'modalDoughnut', 'modalReport', false);
     new bootstrap.Modal('#chartModal', {}).show();
   }
 
   activeUsersBySoftwareReport() {
     this._createCanvas();
-    this._showActiveUsersBySoftware('modalDoughnut', 'modalReport', false);
+    this._renderData(this._data.activeUsersBySoftware, 'modalDoughnut', 'modalReport', false);
     new bootstrap.Modal('#chartModal', {}).show();
   }
 
   usersByProtocolReport() {
     this._createCanvas();
-    this._showUsersByProtocol('modalDoughnut', 'modalReport', false);
+    this._renderData(this._data.usersByProtocol, 'modalDoughnut', 'modalReport', false);
     new bootstrap.Modal('#chartModal', {}).show();
   }
 
   usersByInstanceReport() {
     this._createCanvas();
-    this._showUsersByInstance('modalDoughnut', 'modalReport', false);
+    this._renderData(this._data.usersByInstance, 'modalDoughnut', 'modalReport', false);
     new bootstrap.Modal('#chartModal', {}).show();
   }
 
   softwareByInstanceReport() {
     this._createCanvas();
-    this._showSoftwaresByInstance('modalDoughnut', 'modalReport', false);
+    this._renderData(this._data.softwareByInstance, 'modalDoughnut', 'modalReport', false);
     new bootstrap.Modal('#chartModal', {}).show();
   }
 
@@ -45,120 +45,18 @@ class Stats {
   }
 
   _showData(data) {
-    delete data['egirls.gay'];
-
-    this._totalUsers = Object.keys(data).map(key => parseInt(data[key].nodeInfo.usage?.users?.total || 0)).reduce((partialSum, a) => partialSum + a, 0);
-    this._totalServers = Object.keys(data).length;
-    this._totalMAU = Object.keys(data).map(key => parseInt(data[key].nodeInfo.usage?.users?.activeMonth || 0)).reduce((partialSum, a) => partialSum + a, 0);
-
     this._data = data;
 
-    this._updateStats();
-    this._showUsersBySoftware('usersBySoftwareDoughnut', 'usersBySoftwareReport', true);
-    this._showActiveUsersBySoftware("activeUsersBySoftwareDoughnut", "activeUsersBySoftwareReport", true);
-    this._showUsersByProtocol("usersByProtocolDoughnut", "usersByProtocolReport", true);
-    this._showUsersByInstance("usersByInstanceDoughnut", "usersByInstanceReport", true);
-    this._showSoftwaresByInstance("softwareByInstanceDoughnut", "softwareByInstanceReport", true);
-    this._showMastodonPublicTimeline("mastodonPublicTimelineDoughnut", "mastodonPublicTimelineReport");
-  }
+    document.getElementById("totalUsers").innerText = this._intl.format(this._data.totalUsers);
+    document.getElementById("totalServers").innerText = this._intl.format(this._data.totalServers);
+    document.getElementById("totalMAU").innerText = this._intl.format(this._data.totalMAU);
 
-  _updateStats() {
-    document.getElementById("totalUsers").innerText = this._intl.format(this._totalUsers);
-    document.getElementById("totalServers").innerText = this._intl.format(this._totalServers);
-    document.getElementById("totalMAU").innerText = this._intl.format(this._totalMAU);
-  }
-
-  _showUsersBySoftware(id1, id2, round) {
-    const dataset = {};
-    Object.keys(this._data).forEach(server => {
-      const node = this._data[server].nodeInfo;
-      if (node.software?.name) {
-        if (!dataset[node.software.name]) {
-          dataset[node.software.name] = 0;
-        }
-        dataset[node.software.name] += parseInt(node.usage?.users?.total || 0);
-      }
-    });
-
-    this._renderData(dataset, id1, id2, round);
-  }
-
-  _showActiveUsersBySoftware(id1, id2, round) {
-    const dataset = {};
-    Object.keys(this._data).forEach(server => {
-      const node = this._data[server].nodeInfo;
-      if (node.software?.name) {
-        if (!dataset[node.software.name]) {
-          dataset[node.software.name] = 0;
-        }
-
-        dataset[node.software.name] += parseInt(node.usage?.users?.activeMonth || 0);
-      }
-    });
-
-    this._renderData(dataset, id1, id2, round);
-  }
-
-  _showUsersByProtocol(id1, id2, round) {
-    const dataset = {};
-    Object.keys(this._data).forEach(server => {
-      const node = this._data[server].nodeInfo;
-      if (!Array.isArray(node.protocols)) {
-        return;
-      }
-
-      for (let protocol of node.protocols) {
-        if (!dataset[protocol]) {
-          dataset[protocol] = 0;
-        }
-
-        dataset[protocol] += parseInt(node.usage?.users?.total || 0);
-      }
-    });
-
-    this._renderData(dataset, id1, id2, round);
-  }
-
-  _showUsersByInstance(id1, id2, round) {
-    const dataset = {};
-    Object.keys(this._data).forEach(server => {
-      const node = this._data[server].nodeInfo;
-      if (!dataset[server]) dataset[server] = 0;
-      dataset[server] += parseInt(node.usage?.users?.total || 0);
-    });
-
-    this._renderData(dataset, id1, id2, round);
-  }
-
-  _showSoftwaresByInstance(id1, id2, round) {
-    const dataset = {};
-    Object.keys(this._data).forEach(server => {
-      const node = this._data[server].nodeInfo;
-      if (node.software?.name) {
-        if (!dataset[node.software.name]) {
-          dataset[node.software.name] = 0;
-        }
-        dataset[node.software.name] += 1;
-      }
-    });
-
-    this._renderData(dataset, id1, id2, round);
-  }
-
-  _showMastodonPublicTimeline(id1, id2) {
-    const dataset = {
-      public: 0,
-      private: 0
-    };
-    Object.keys(this._data).forEach(server => {
-      const node = this._data[server];
-      if ("mastodon_public" in node) {
-        if (node.mastodon_public) dataset.public += 1;
-        else dataset.private += 1;
-      }
-    });
-
-    this._renderData(dataset, id1, id2, false);
+    this._renderData(data.usersBySoftware, 'usersBySoftwareDoughnut', 'usersBySoftwareReport', true);
+    this._renderData(data.activeUsersBySoftware, "activeUsersBySoftwareDoughnut", "activeUsersBySoftwareReport", true);
+    this._renderData(data.usersByProtocol, "usersByProtocolDoughnut", "usersByProtocolReport", true);
+    this._renderData(data.usersByInstance, "usersByInstanceDoughnut", "usersByInstanceReport", true);
+    this._renderData(data.softwareByInstance, "softwareByInstanceDoughnut", "softwareByInstanceReport", true);
+    this._renderData(data.mastodonPublicTimeline, "mastodonPublicTimelineDoughnut", "mastodonPublicTimelineReport");
   }
 
   _renderData(dataset, id1, id2, round) {
