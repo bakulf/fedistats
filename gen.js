@@ -6,7 +6,7 @@ async function process(server) {
   let data;
   try {
     data = await fetch(`https://${server}/.well-known/nodeinfo`).then(r => r.json());
-  } catch(e) {
+  } catch (e) {
     console.log(`Failed to fetch nodeinfo for ${server}`);
     return;
   }
@@ -29,24 +29,26 @@ async function process(server) {
   let nodeInfo;
   try {
     nodeInfo = await fetch(obj.href).then(r => r.json());
-  } catch(e) {
+  } catch (e) {
     console.log(`Failed to fetch the nodeinfo endpoint for ${server}`);
     return;
   }
 
-  report[server] = { nodeInfo };
+  report[server] = {
+    nodeInfo
+  };
 
   if (nodeInfo.software?.name === "mastodon") {
     try {
       report[server].mastodon = await fetch(`https://${server}/api/v1/instance`).then(r => r.json());
-    } catch(e) {
+    } catch (e) {
       console.log(`Failed to fetch the mastodon instance endpoint for server ${server}`);
     }
 
     try {
       const public_timeline = await fetch(`https://${server}/api/v1/timelines/public`).then(r => r.json());
       report[server].mastodon_public = Array.isArray(public_timeline);
-    } catch(e) {
+    } catch (e) {
       report[server].mastodon_public = false;
     }
   }
@@ -55,7 +57,7 @@ async function process(server) {
 }
 
 async function worker(servers) {
-  while(servers.length) {
+  while (servers.length) {
     const server = servers.splice(0, 1);
     await process(server);
   }

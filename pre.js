@@ -3,9 +3,11 @@ const fs = require('fs');
 class Stats {
   run() {
     const data = JSON.parse(fs.readFileSync("./LOG.json"));
+    const stat = fs.statSync("./LOG.json");
     delete data['egirls.gay'];
 
     const report = {
+      ctime: stat.ctimeMs,
       totalUsers: Object.keys(data).map(key => parseInt(data[key].nodeInfo.usage?.users?.total || 0)).reduce((partialSum, a) => partialSum + a, 0),
       totalServers: Object.keys(data).length,
       totalMAU: Object.keys(data).map(key => parseInt(data[key].nodeInfo.usage?.users?.activeMonth || 0)).reduce((partialSum, a) => partialSum + a, 0),

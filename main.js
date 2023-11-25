@@ -47,6 +47,11 @@ class Stats {
   _showData(data) {
     this._data = data;
 
+    document.getElementById("genStats").innerText = new Intl.DateTimeFormat('en-US', {
+      dateStyle: 'long',
+      timeStyle: 'long',
+    }).format(new Date(this._data.ctime));
+
     document.getElementById("totalUsers").innerText = this._intl.format(this._data.totalUsers);
     document.getElementById("totalServers").innerText = this._intl.format(this._data.totalServers);
     document.getElementById("totalMAU").innerText = this._intl.format(this._data.totalMAU);
