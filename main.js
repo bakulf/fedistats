@@ -61,11 +61,13 @@ class Stats {
     this._renderData(data.usersByProtocol, "usersByProtocolDoughnut", "usersByProtocolReport", true);
     this._renderData(data.usersByInstance, "usersByInstanceDoughnut", "usersByInstanceReport", true);
     this._renderData(data.softwareByInstance, "softwareByInstanceDoughnut", "softwareByInstanceReport", true);
-    this._renderData(data.mastodonPublicTimeline, "mastodonPublicTimelineDoughnut", "mastodonPublicTimelineReport");
+    this._renderData(data.mastodonPublicTimeline, "mastodonPublicTimelineDoughnut", "mastodonPublicTimelineReport", false, "bar");
     this._renderData(data.userDistribution, "userDistributionDoughnut", "userDistributionReport");
+    this._renderData(data.activeUserDistribution, "activeUserDistributionDoughnut", "activeUserDistributionReport");
+    this._renderData(data.activeVsInactive, "activeVsInactiveDoughnut", "activeVsInactiveReport", false, "bar");
   }
 
-  _renderData(dataset, id1, id2, round) {
+  _renderData(dataset, id1, id2, round = true, type = "doughnut") {
     const labels = Object.keys(dataset).sort((a, b) => dataset[a] < dataset[b]);
     let datasets = Object.keys(dataset).map(key => dataset[key]).sort((a, b) => a < b);
     const total = datasets.reduce((partialSum, a) => partialSum + a, 0);
@@ -83,7 +85,7 @@ class Stats {
 
     const ctx = document.getElementById(id1);
     const chart = new Chart(ctx, {
-      type: 'doughnut',
+      type,
       data: {
         labels,
         datasets: [{

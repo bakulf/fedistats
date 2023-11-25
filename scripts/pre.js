@@ -19,6 +19,8 @@ class Stats {
       softwareByInstance: this._showSoftwaresByInstance(data),
       mastodonPublicTimeline: this._showMastodonPublicTimeline(data),
       userDistribution: this._showUserDistribution(data),
+      activeUserDistribution: this._showActiveUserDistribution(data),
+      activeVsInactive: this._showActiveVsInactive(data),
     }
 
     fs.writeFileSync("pre.json", JSON.stringify(report));
@@ -115,6 +117,7 @@ class Stats {
 
   _showUserDistribution(data) {
     const dataset = {
+      "up to 0": 0,
       "up to 1": 0,
       "up to 10": 0,
       "up to 100": 0,
@@ -123,11 +126,45 @@ class Stats {
     };
     Object.keys(data).forEach(server => {
       const node = data[server].nodeInfo;
-      if (data[server].nodeInfo.usage?.users?.total <= 1) dataset["up to 1"] += 1;
+      if (data[server].nodeInfo.usage?.users?.total <= 0) dataset["up to 0"] += 1;
+      else if (data[server].nodeInfo.usage?.users?.total <= 1) dataset["up to 1"] += 1;
       else if (data[server].nodeInfo.usage?.users?.total <= 10) dataset["up to 10"] += 1;
       else if (data[server].nodeInfo.usage?.users?.total <= 100) dataset["up to 100"] += 1;
       else if (data[server].nodeInfo.usage?.users?.total <= 1000) dataset["up to 1000"] += 1;
       else dataset["more than 1000"] += 1;
+    });
+    return dataset;
+  }
+
+  _showActiveUserDistribution(data) {
+    const dataset = {
+      "up to 0": 0,
+      "up to 1": 0,
+      "up to 10": 0,
+      "up to 100": 0,
+      "up to 1000": 0,
+      "more than 1000": 0,
+    };
+    Object.keys(data).forEach(server => {
+      const node = data[server].nodeInfo;
+      if (data[server].nodeInfo.usage?.users?.activeMonth <= 0) dataset["up to 0"] += 1;
+      else if (data[server].nodeInfo.usage?.users?.activeMonth <= 1) dataset["up to 1"] += 1;
+      else if (data[server].nodeInfo.usage?.users?.activeMonth <= 10) dataset["up to 10"] += 1;
+      else if (data[server].nodeInfo.usage?.users?.activeMonth <= 100) dataset["up to 100"] += 1;
+      else if (data[server].nodeInfo.usage?.users?.activeMonth <= 1000) dataset["up to 1000"] += 1;
+      else dataset["more than 1000"] += 1;
+    });
+    return dataset;
+  }
+
+  _showActiveVsInactive(data) {
+    const dataset = {
+      active: 0,
+      inactive: 0
+    };
+    Object.keys(data).forEach(server => {
+      if (data[server].nodeInfo.usage?.users?.activeMonth > 0) dataset.active += 1;
+      else dataset.inactive += 1;
     });
     return dataset;
   }
