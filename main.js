@@ -3,6 +3,7 @@ class Stats {
     this._intl = new Intl.NumberFormat();
 
     fetch("./pre.json").then(r => r.json()).then(data => this._showData(data));
+    fetch("./old/list.txt").then(r => r.text()).then(data => this._showTrends(data));
   }
 
   usersBySoftwareReport() {
@@ -122,6 +123,75 @@ class Stats {
 
       table.appendChild(tr);
     }
+  }
+
+  async _showTrends(data) {
+    const dataset = (await Promise.all(data.trim().split("\n").map(async file => fetch(`./old/${file}`).then(r => r.json().then(data => ({
+      date: file.slice(0, file.indexOf('.')),
+      data
+    })))))).sort((a, b) => a.date > b.date);
+
+    this._renderTrends('userTrendsLine', 'User Trends', 'Number of users', dataset.map(a => a.date),
+      [{
+        label: "Users",
+        data: dataset.map(a => a.data.totalUsers),
+        fill: false,
+        cubicInterpolationMode: 'monotone',
+        tension: 0.4
+      }, {
+        label: "Active Users",
+        data: dataset.map(a => a.data.totalMAU),
+        fill: false,
+        cubicInterpolationMode: 'monotone',
+        tension: 0.4
+      }]);
+
+    this._renderTrends('serverTrendsLine', 'Server Trends', 'Number of servers', dataset.map(a => a.date),
+      [{
+        label: "Servers",
+        data: dataset.map(a => a.data.totalServers),
+        fill: false,
+        cubicInterpolationMode: 'monotone',
+        tension: 0.4
+      }]);
+  }
+
+  _renderTrends(id, title, y_title, labels, datasets) {
+    const ctx = document.getElementById(id);
+    const chart = new Chart(ctx, {
+      type: "line",
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: title,
+          },
+        },
+        interaction: {
+          intersect: false,
+        },
+        scales: {
+          x: {
+            display: true,
+            title: {
+              display: true
+            }
+          },
+          y: {
+            display: true,
+            title: {
+              display: true,
+              text: y_title,
+            },
+          }
+        }
+      },
+      data: {
+        labels,
+        datasets,
+      },
+    });
   }
 }
 
