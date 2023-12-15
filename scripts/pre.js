@@ -21,10 +21,14 @@ class Stats {
       userDistribution: this._showUserDistribution(data),
       activeUserDistribution: this._showActiveUserDistribution(data),
       activeVsInactive: this._showActiveVsInactive(data),
+      ruleDistribution: this._showRuleDistribution(data),
+      ruleWords: this._showRuleWords(data),
     }
 
     fs.writeFileSync("pre.json", JSON.stringify(report));
     fs.writeFileSync(`old/${new Date().toISOString().replace(/T.*/,'').split('-').join('-')}.json`, JSON.stringify(report));
+
+    fs.writeFileSync("rule_archive.json", JSON.stringify(this._ruleArchive(data)));
   }
 
   _showUsersBySoftware(data) {
@@ -136,6 +140,50 @@ class Stats {
     return dataset;
   }
 
+  _showRuleDistribution(data) {
+    const dataset = {};
+    Object.keys(data).filter(server => data[server].mastodon).forEach(server => {
+      let count = 0;
+      if (Array.isArray(data[server].mastodon.rules) && data[server].mastodon.rules.length > 0) {
+        count = data[server].mastodon.rules.length;
+      }
+
+      if (!dataset[count]) dataset[count] = 0;
+      dataset[count] += 1;
+    });
+    return dataset;
+  }
+
+  _showRuleWords(data) {
+    const dataset = {};
+    Object.keys(data).filter(server => data[server].mastodon).forEach(server => {
+      if (!Array.isArray(data[server].mastodon.rules)) return;
+
+      data[server].mastodon.rules.forEach(rule => {
+        rule.text.split(/[ ,.]+/).filter(word => word.length >= 10).forEach(word => {
+          word = word.trim();
+          if (word.length > 3) {
+            if (!dataset[word]) dataset[word] = 0;
+            dataset[word] += 1;
+          }
+        });
+      });
+    });
+
+    const labels = Object.keys(dataset).sort((a, b) => {
+      if (dataset[a] > dataset[b]) return -1;
+      if (dataset[b] < dataset[a]) return 1;
+      return 0;
+    });
+    labels.splice(100);
+
+    Object.keys(dataset).forEach(key => {
+      if (!labels.includes(key)) delete dataset[key];
+    });
+
+    return dataset;
+  }
+
   _showActiveUserDistribution(data) {
     const dataset = {
       "up to 0": 0,
@@ -166,6 +214,12 @@ class Stats {
       if (data[server].nodeInfo.usage?.users?.activeMonth > 0) dataset.active += 1;
       else dataset.inactive += 1;
     });
+    return dataset;
+  }
+
+  _ruleArchive(data) {
+    const dataset = {};
+    Object.keys(data).filter(server => data[server].mastodon && Array.isArray(data[server].mastodon.rules)).forEach(server => dataset[server] = data[server].mastodon.rules);
     return dataset;
   }
 }

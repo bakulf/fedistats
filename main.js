@@ -36,6 +36,12 @@ class Stats {
     new bootstrap.Modal('#chartModal', {}).show();
   }
 
+  rulesWordsReport() {
+    this._createCanvas();
+    this._renderData(this._data.ruleWords, 'modalDoughnut', 'modalReport', false);
+    new bootstrap.Modal('#chartModal', {}).show();
+  }
+
   _createCanvas() {
     const div = document.getElementById("modalCanvas");
     while (div.firstChild) div.firstChild.remove();
@@ -66,6 +72,8 @@ class Stats {
     this._renderData(data.userDistribution, "userDistributionDoughnut", "userDistributionReport");
     this._renderData(data.activeUserDistribution, "activeUserDistributionDoughnut", "activeUserDistributionReport");
     this._renderData(data.activeVsInactive, "activeVsInactiveDoughnut", "activeVsInactiveReport", false, "bar");
+    this._renderData(data.ruleDistribution, "ruleDistributionDoughnut", "ruleDistributionReport");
+    this._renderData(data.ruleWords, "ruleWords", "rulesWordsReport", true, "bar");
   }
 
   _renderData(dataset, id1, id2, round = true, type = "doughnut") {
@@ -84,44 +92,48 @@ class Stats {
 
     datasets = datasets.map(a => a * 100 / total);
 
-    const ctx = document.getElementById(id1);
-    const chart = new Chart(ctx, {
-      type,
-      data: {
-        labels,
-        datasets: [{
-          data: datasets
-        }],
-      },
-      options: {
-        plugins: {
-          legend: {
-            display: false
-          },
+    if (id1) {
+      const ctx = document.getElementById(id1);
+      const chart = new Chart(ctx, {
+        type,
+        data: {
+          labels,
+          datasets: [{
+            data: datasets
+          }],
         },
+        options: {
+          plugins: {
+            legend: {
+              display: false
+            },
+          },
+        }
+      });
+    }
+
+    if (id2) {
+      const report = document.getElementById(id2);
+      while (report.firstChild) report.firstChild.remove();
+
+      const table = document.createElement('table');
+      table.setAttribute('class', 'table');
+      report.appendChild(table);
+
+      for (let i = 0; i < labels.length; ++i) {
+        const tr = document.createElement('tr');
+        tr.setAttribute('class', "trst-group-item");
+
+        const tdLabel = document.createElement('td');
+        tdLabel.appendChild(document.createTextNode(labels[i]));
+        tr.append(tdLabel);
+
+        const tdValue = document.createElement('td');
+        tdValue.appendChild(document.createTextNode(`${Math.round(datasets[i] * 100) / 100}%`));
+        tr.append(tdValue);
+
+        table.appendChild(tr);
       }
-    });
-
-    const report = document.getElementById(id2);
-    while (report.firstChild) report.firstChild.remove();
-
-    const table = document.createElement('table');
-    table.setAttribute('class', 'table');
-    report.appendChild(table);
-
-    for (let i = 0; i < labels.length; ++i) {
-      const tr = document.createElement('tr');
-      tr.setAttribute('class', "trst-group-item");
-
-      const tdLabel = document.createElement('td');
-      tdLabel.appendChild(document.createTextNode(labels[i]));
-      tr.append(tdLabel);
-
-      const tdValue = document.createElement('td');
-      tdValue.appendChild(document.createTextNode(`${Math.round(datasets[i] * 100) / 100}%`));
-      tr.append(tdValue);
-
-      table.appendChild(tr);
     }
   }
 

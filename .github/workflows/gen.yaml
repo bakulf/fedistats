@@ -35,7 +35,7 @@ jobs:
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY
           git checkout "${GITHUB_REF:11}"
           (cd old && ls -1 *json > list.txt)
-          git add pre.json old/*.json old/list.txt
+          git add pre.json old/*.json old/list.txt rule_archive.json
           git commit -m "Stats updated"
           git push 
 
