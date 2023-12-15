@@ -1,7 +1,8 @@
 const fs = require('fs');
+const cld = require('cld');
 
 class Stats {
-  run() {
+  async run() {
     const data = JSON.parse(fs.readFileSync("./LOG.json"));
     const stat = fs.statSync("./LOG.json");
     delete data['egirls.gay'];
@@ -23,6 +24,8 @@ class Stats {
       activeVsInactive: this._showActiveVsInactive(data),
       ruleDistribution: this._showRuleDistribution(data),
       ruleWords: this._showRuleWords(data),
+      detectedLanguages: await this._showDetectedLanguages(data),
+      languages: this._showLanguages(data),
     }
 
     fs.writeFileSync("pre.json", JSON.stringify(report));
@@ -220,6 +223,45 @@ class Stats {
   _ruleArchive(data) {
     const dataset = {};
     Object.keys(data).filter(server => data[server].mastodon && Array.isArray(data[server].mastodon.rules)).forEach(server => dataset[server] = data[server].mastodon.rules);
+    return dataset;
+  }
+
+  async _showDetectedLanguages(data) {
+    const dataset = {};
+
+    await Promise.all(Object.keys(data).filter(server => data[server].mastodon && data[server].mastodon.description).map(async server => {
+      let languages = null;
+      try {
+        languages = (await cld.detect(data[server].mastodon.description))?.languages;
+      } catch (e) {}
+
+      if (!Array.isArray(languages)) return;
+
+      for (const language of languages) {
+        const lang = new Intl.DisplayNames(['en'], {
+          type: 'language'
+        }).of(language.code);
+        if (!dataset[lang]) dataset[lang] = 0;
+        dataset[lang] += 1;
+      }
+    }));
+
+    return dataset;
+  }
+
+  _showLanguages(data) {
+    const dataset = {};
+
+    Object.keys(data).filter(server => data[server].mastodon && data[server].mastodon.description).forEach(async server => {
+      for (const language of data[server].mastodon.languages) {
+        const lang = new Intl.DisplayNames(['en'], {
+          type: 'language'
+        }).of(language);
+        if (!dataset[lang]) dataset[lang] = 0;
+        dataset[lang] += 1;
+      }
+    });
+
     return dataset;
   }
 }

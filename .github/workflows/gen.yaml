@@ -25,6 +25,7 @@ jobs:
       - name: Run
         shell: bash
         run: |
+          npm i cld
           node scripts/gen.js
           node scripts/pre.js
 

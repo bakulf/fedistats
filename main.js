@@ -42,6 +42,18 @@ class Stats {
     new bootstrap.Modal('#chartModal', {}).show();
   }
 
+  detectedLanguageDistribution() {
+    this._createCanvas();
+    this._renderData(this._data.detectedLanguages, 'modalDoughnut', 'modalReport', false);
+    new bootstrap.Modal('#chartModal', {}).show();
+  }
+
+  languageDistribution() {
+    this._createCanvas();
+    this._renderData(this._data.languages, 'modalDoughnut', 'modalReport', false);
+    new bootstrap.Modal('#chartModal', {}).show();
+  }
+
   _createCanvas() {
     const div = document.getElementById("modalCanvas");
     while (div.firstChild) div.firstChild.remove();
@@ -74,6 +86,8 @@ class Stats {
     this._renderData(data.activeVsInactive, "activeVsInactiveDoughnut", "activeVsInactiveReport", false, "bar");
     this._renderData(data.ruleDistribution, "ruleDistributionDoughnut", "ruleDistributionReport");
     this._renderData(data.ruleWords, "ruleWords", "rulesWordsReport", true, "bar");
+    this._renderData(data.detectedLanguages, "detectedLanguageDistributionLine", "detectedLanguageDistributionReport", true, "bar");
+    this._renderData(data.languages, "languageDistributionLine", "languageDistributionReport", true, "bar");
   }
 
   _renderData(dataset, id1, id2, round = true, type = "doughnut") {
