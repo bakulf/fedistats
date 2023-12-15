@@ -38,3 +38,10 @@ jobs:
           git add pre.json old/*.json old/list.txt
           git commit -m "Stats updated"
           git push 
+
+      - name: Storing logs as artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: logs
+          path: LOG.json
+
