@@ -3,7 +3,6 @@ class Stats {
     this._intl = new Intl.NumberFormat();
 
     fetch("./pre.json").then(r => r.json()).then(data => this._showData(data));
-    fetch("./old/list.txt").then(r => r.text()).then(data => this._showTrends(data));
   }
 
   usersBySoftwareReport() {
@@ -88,6 +87,8 @@ class Stats {
     this._renderData(data.ruleWords, "ruleWords", "rulesWordsReport", true, "bar");
     this._renderData(data.detectedLanguages, "detectedLanguageDistributionLine", "detectedLanguageDistributionReport", true, "bar");
     this._renderData(data.languages, "languageDistributionLine", "languageDistributionReport", true, "bar");
+
+    this._showTrends(data.trends);
   }
 
   _renderData(dataset, id1, id2, round = true, type = "doughnut") {
@@ -151,22 +152,17 @@ class Stats {
     }
   }
 
-  async _showTrends(data) {
-    const dataset = (await Promise.all(data.trim().split("\n").map(async file => fetch(`./old/${file}`).then(r => r.json().then(data => ({
-      date: file.slice(0, file.indexOf('.')),
-      data
-    })))))).sort((a, b) => a.date > b.date);
-
+  async _showTrends(dataset) {
     this._renderTrends('userTrendsLine', 'User Trends', 'Number of users', dataset.map(a => a.date),
       [{
         label: "Users",
-        data: dataset.map(a => a.data.totalUsers),
+        data: dataset.map(a => a.totalUsers),
         fill: false,
         cubicInterpolationMode: 'monotone',
         tension: 0.4
       }, {
         label: "Active Users",
-        data: dataset.map(a => a.data.totalMAU),
+        data: dataset.map(a => a.totalMAU),
         fill: false,
         cubicInterpolationMode: 'monotone',
         tension: 0.4
@@ -175,7 +171,7 @@ class Stats {
     this._renderTrends('serverTrendsLine', 'Server Trends', 'Number of servers', dataset.map(a => a.date),
       [{
         label: "Servers",
-        data: dataset.map(a => a.data.totalServers),
+        data: dataset.map(a => a.totalServers),
         fill: false,
         cubicInterpolationMode: 'monotone',
         tension: 0.4

@@ -7,6 +7,15 @@ class Stats {
     const stat = fs.statSync("./LOG.json");
     delete data['egirls.gay'];
 
+    const trends = [];
+    fs.readdirSync("./old").filter(f => f.endsWith(".json")).forEach(file => {
+      trends.push({
+        date: file.slice(0, file.indexOf('.')),
+        data: JSON.parse(fs.readFileSync(`./old/${file}`))
+      })
+    });
+    trends.sort((a, b) => a.date > b.date);
+
     const report = {
       ctime: stat.ctimeMs,
       totalUsers: Object.keys(data).map(key => parseInt(data[key].nodeInfo.usage?.users?.total || 0)).reduce((partialSum, a) => partialSum + a, 0),
@@ -26,12 +35,22 @@ class Stats {
       ruleWords: this._showRuleWords(data),
       detectedLanguages: await this._showDetectedLanguages(data),
       languages: this._showLanguages(data),
+      trends: this._showTrends(trends),
     }
 
     fs.writeFileSync("pre.json", JSON.stringify(report));
     fs.writeFileSync(`old/${new Date().toISOString().replace(/T.*/,'').split('-').join('-')}.json`, JSON.stringify(report));
 
     fs.writeFileSync("rule_archive.json", JSON.stringify(this._ruleArchive(data)));
+  }
+
+  _showTrends(trends) {
+    return trends.map(a => ({
+      date: a.date,
+      totalUsers: a.data.totalUsers,
+      totalMAU: a.data.totalMAU,
+      totalServers: a.data.totalServers
+    }));
   }
 
   _showUsersBySoftware(data) {
