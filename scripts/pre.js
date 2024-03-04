@@ -271,7 +271,7 @@ class Stats {
   _showLanguages(data) {
     const dataset = {};
 
-    Object.keys(data).filter(server => data[server].mastodon && data[server].mastodon.description).forEach(async server => {
+    Object.keys(data).filter(server => data[server].mastodon && data[server].mastodon.languages).forEach(async server => {
       for (const language of data[server].mastodon.languages) {
         const lang = new Intl.DisplayNames(['en'], {
           type: 'language'
