@@ -37,6 +37,7 @@ class Stats {
       detectedLanguages: await this._showDetectedLanguages(data),
       languages: this._showLanguages(data),
       trends: this._showTrends(trends),
+      softwareByInstance: this._showPostsByInstance(data),
     }
 
     fs.writeFileSync("pre.json", JSON.stringify(report));
@@ -125,6 +126,18 @@ class Stats {
         dataset[node.software.name] += 1;
       }
     });
+    return dataset;
+  }
+
+  _showPostsByInstance(data) {
+    const dataset = {};
+    Object.keys(data).forEach(server => {
+      const node = data[server].nodeInfo;
+      if (node.usage?.localPosts) {
+        dataset[server] = node.usage.localPosts;
+      }
+    });
+
     return dataset;
   }
 
