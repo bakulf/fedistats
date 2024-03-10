@@ -18,10 +18,10 @@ class Stats {
 
     const report = {
       ctime: stat.ctimeMs,
-      totalUsers: Object.keys(data).map(key => parseInt(data[key].nodeInfo.usage?.users?.total || 0)).reduce((partialSum, a) => partialSum + a, 0),
+      totalUsers: Object.keys(data).map(key => parseInt(data[key].nodeInfo.usage?.users?.total || 0)).filter(a => a > 0).reduce((partialSum, a) => partialSum + a, 0),
       totalServers: Object.keys(data).length,
-      totalMAU: Object.keys(data).map(key => parseInt(data[key].nodeInfo.usage?.users?.activeMonth || 0)).reduce((partialSum, a) => partialSum + a, 0),
-      localPosts: Object.keys(data).map(key => parseInt(data[key].nodeInfo.usage?.localPosts || 0)).reduce((partialSum, a) => partialSum + a, 0),
+      totalMAU: Object.keys(data).map(key => parseInt(data[key].nodeInfo.usage?.users?.activeMonth || 0)).filter(a => a > 0).reduce((partialSum, a) => partialSum + a, 0),
+      localPosts: Object.keys(data).map(key => parseInt(data[key].nodeInfo.usage?.localPosts || 0)).filter(a => a > 0).reduce((partialSum, a) => partialSum + a, 0),
 
       usersBySoftware: this._showUsersBySoftware(data),
       activeUsersBySoftware: this._showActiveUsersBySoftware(data),
@@ -52,7 +52,7 @@ class Stats {
       totalUsers: a.data.totalUsers,
       totalMAU: a.data.totalMAU,
       localPosts: a.data.localPosts,
-      totalServers: a.data.totalServers
+      totalServers: a.data.totalServers,
     }));
   }
 
@@ -138,7 +138,6 @@ class Stats {
       }
     });
 
-    console.log(dataset);
     return dataset;
   }
 

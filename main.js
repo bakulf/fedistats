@@ -176,6 +176,24 @@ class Stats {
         cubicInterpolationMode: 'monotone',
         tension: 0.4
       }]);
+
+    const postDataset = dataset.filter(a => "localPosts" in a);
+    const diffPostDataset = [];
+    for (let i = 1; i < postDataset.length; ++i) {
+      diffPostDataset.push({
+        date: postDataset[i].date,
+        value: postDataset[i].localPosts - postDataset[i - 1].localPosts
+      });
+    }
+
+    this._renderTrends('postTrendsLine', 'Post Trends', 'Number of new posts', diffPostDataset.map(a => a.date),
+      [{
+        label: "Diff Posts",
+        data: diffPostDataset.map(a => a.value),
+        fill: false,
+        cubicInterpolationMode: 'monotone',
+        tension: 0.4
+      }]);
   }
 
   _renderTrends(id, title, y_title, labels, datasets) {
