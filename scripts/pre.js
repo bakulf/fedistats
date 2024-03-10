@@ -37,7 +37,7 @@ class Stats {
       detectedLanguages: await this._showDetectedLanguages(data),
       languages: this._showLanguages(data),
       trends: this._showTrends(trends),
-      softwareByInstance: this._showPostsByInstance(data),
+      postsByInstance: this._showPostsByInstance(data),
     }
 
     fs.writeFileSync("pre.json", JSON.stringify(report));
@@ -138,6 +138,7 @@ class Stats {
       }
     });
 
+    console.log(dataset);
     return dataset;
   }
 
