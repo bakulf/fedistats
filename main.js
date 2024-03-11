@@ -89,6 +89,7 @@ class Stats {
     this._renderData(data.languages, "languageDistributionLine", "languageDistributionReport", true, "bar");
 
     this._showTrends(data.trends);
+    this._showPostTrends(data);
   }
 
   _renderData(dataset, id1, id2, round = true, type = "doughnut") {
@@ -176,8 +177,10 @@ class Stats {
         cubicInterpolationMode: 'monotone',
         tension: 0.4
       }]);
+  }
 
-    const postDataset = dataset.filter(a => "localPosts" in a);
+  async _showPostTrends(data) {
+    const postDataset = data.trends.filter(a => "localPosts" in a);
     const diffPostDataset = [];
     for (let i = 1; i < postDataset.length; ++i) {
       diffPostDataset.push({
@@ -186,14 +189,51 @@ class Stats {
       });
     }
 
-    this._renderTrends('postTrendsLine', 'Post Trends', 'Number of new posts', diffPostDataset.map(a => a.date),
-      [{
-        label: "Diff Posts",
-        data: diffPostDataset.map(a => a.value),
+    const dates = postDataset.map(a => a.date);
+
+    const trendData = [];
+
+    for (const instance of data.postsByActiveInstances) {
+      let initValue = instance.dataset.find(a => a.date === dates[0])?.localPosts || 0;
+      const instanceDataset = [];
+      for (let i = 1; i < dates.length; ++i) {
+        let currentValue = instance.dataset.find(a => a.date === dates[i])?.localPosts || 0;
+        instanceDataset.push({
+          date: dates[i],
+          value: currentValue - initValue
+        });
+        initValue = currentValue;
+      }
+
+      trendData.push({
+        label: instance.server,
+        data: instanceDataset.map(a => a.value),
         fill: false,
         cubicInterpolationMode: 'monotone',
         tension: 0.4
-      }]);
+      });
+    }
+
+    let initValue = data.postsByActiveInstances.reduce((partialSum, a) => partialSum + a.dataset.find(a => a.date === dates[0])?.localPosts || 0, 0);
+    const instanceDataset = [];
+    for (let i = 1; i < dates.length; ++i) {
+      let currentValue = data.postsByActiveInstances.reduce((partialSum, a) => partialSum + a.dataset.find(a => a.date === dates[i])?.localPosts || 0, 0);
+      instanceDataset.push({
+        date: dates[i],
+        value: currentValue - initValue
+      });
+      initValue = currentValue;
+    }
+
+    trendData.push({
+      label: "Total diff",
+      data: instanceDataset.map(a => a.value),
+      fill: false,
+      cubicInterpolationMode: 'monotone',
+      tension: 0.4
+    });
+
+    this._renderTrends('postTrendsLine', 'Post Trends', 'Number of new posts', diffPostDataset.map(a => a.date), trendData);
   }
 
   _renderTrends(id, title, y_title, labels, datasets) {

@@ -38,6 +38,7 @@ class Stats {
       languages: this._showLanguages(data),
       trends: this._showTrends(trends),
       postsByInstance: this._showPostsByInstance(data),
+      postsByActiveInstances: this._showPostsByActiveInstances(trends, data),
     }
 
     fs.writeFileSync("pre.json", JSON.stringify(report));
@@ -134,11 +135,26 @@ class Stats {
     Object.keys(data).forEach(server => {
       const node = data[server].nodeInfo;
       if (node.usage?.localPosts) {
-        dataset[server] = node.usage.localPosts;
+        const v = node.usage.localPosts;
+        dataset[server] = v < 0 ? 0 : v;
       }
     });
 
     return dataset;
+  }
+  _showPostsByActiveInstances(trends, data) {
+    const filteredTrends = trends.filter(a => "localPosts" in a.data);
+    return Object.keys(data).map(server => ({
+      server,
+      users: parseInt(data[server].nodeInfo?.usage?.users?.total || 0) || 0
+    })).sort((a, b) => a.users > b.users ? -1 : 1).slice(0, 10).map(a => ({
+      server: a.server,
+      dataset: filteredTrends.map(t => ({
+        date: t.date,
+        localPosts: t.data.postsByInstance[a.server]
+      }))
+    }));
+
   }
 
   _showMastodonPublicTimeline(data) {
