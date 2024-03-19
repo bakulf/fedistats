@@ -257,8 +257,12 @@ class Stats {
         scales: {
           x: {
             display: true,
+            type: 'time',
             title: {
               display: true
+            },
+            time: {
+              unit: 'day'
             }
           },
           y: {
