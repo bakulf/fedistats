@@ -23,31 +23,31 @@ class Stats {
       totalMAU: Object.keys(data).map(key => parseInt(data[key].nodeInfo.usage?.users?.activeMonth || 0)).filter(a => a > 0).reduce((partialSum, a) => partialSum + a, 0),
       localPosts: Object.keys(data).map(key => parseInt(data[key].nodeInfo.usage?.localPosts || 0)).filter(a => a > 0).reduce((partialSum, a) => partialSum + a, 0),
 
-      usersBySoftware: this._showUsersBySoftware(data),
-      activeUsersBySoftware: this._showActiveUsersBySoftware(data),
-      usersByProtocol: this._showUsersByProtocol(data),
-      usersByInstance: this._showUsersByInstance(data),
-      softwareByInstance: this._showSoftwaresByInstance(data),
-      mastodonPublicTimeline: this._showMastodonPublicTimeline(data),
-      userDistribution: this._showUserDistribution(data),
-      activeUserDistribution: this._showActiveUserDistribution(data),
-      activeVsInactive: this._showActiveVsInactive(data),
-      ruleDistribution: this._showRuleDistribution(data),
-      ruleWords: this._showRuleWords(data),
-      detectedLanguages: await this._showDetectedLanguages(data),
-      languages: this._showLanguages(data),
-      trends: this._showTrends(trends),
-      postsByInstance: this._showPostsByInstance(data),
-      postsByActiveInstances: this._showPostsByActiveInstances(trends, data),
+      usersBySoftware: this.#showUsersBySoftware(data),
+      activeUsersBySoftware: this.#showActiveUsersBySoftware(data),
+      usersByProtocol: this.#showUsersByProtocol(data),
+      usersByInstance: this.#showUsersByInstance(data),
+      softwareByInstance: this.#showSoftwaresByInstance(data),
+      mastodonPublicTimeline: this.#showMastodonPublicTimeline(data),
+      userDistribution: this.#showUserDistribution(data),
+      activeUserDistribution: this.#showActiveUserDistribution(data),
+      activeVsInactive: this.#showActiveVsInactive(data),
+      ruleDistribution: this.#showRuleDistribution(data),
+      ruleWords: this.#showRuleWords(data),
+      detectedLanguages: await this.#showDetectedLanguages(data),
+      languages: this.#showLanguages(data),
+      trends: this.#showTrends(trends),
+      postsByInstance: this.#showPostsByInstance(data),
+      postsByActiveInstances: this.#showPostsByActiveInstances(trends, data),
     }
 
     fs.writeFileSync("pre.json", JSON.stringify(report));
     fs.writeFileSync(`old/${new Date().toISOString().replace(/T.*/,'').split('-').join('-')}.json`, JSON.stringify(report));
 
-    fs.writeFileSync("rule_archive.json", JSON.stringify(this._ruleArchive(data)));
+    fs.writeFileSync("rule_archive.json", JSON.stringify(this.#ruleArchive(data)));
   }
 
-  _showTrends(trends) {
+  #showTrends(trends) {
     return trends.map(a => ({
       date: a.date,
       totalUsers: a.data.totalUsers,
@@ -57,7 +57,7 @@ class Stats {
     }));
   }
 
-  _showUsersBySoftware(data) {
+  #showUsersBySoftware(data) {
     const dataset = {};
     Object.keys(data).forEach(server => {
       const node = data[server].nodeInfo;
@@ -71,7 +71,7 @@ class Stats {
     return dataset;
   }
 
-  _showActiveUsersBySoftware(data) {
+  #showActiveUsersBySoftware(data) {
     const dataset = {};
     Object.keys(data).forEach(server => {
       const node = data[server].nodeInfo;
@@ -86,7 +86,7 @@ class Stats {
     return dataset;
   }
 
-  _showUsersByProtocol(data) {
+  #showUsersByProtocol(data) {
     const dataset = {};
     Object.keys(data).forEach(server => {
       const node = data[server].nodeInfo;
@@ -106,7 +106,7 @@ class Stats {
     return dataset;
   }
 
-  _showUsersByInstance(data) {
+  #showUsersByInstance(data) {
     const dataset = {};
     Object.keys(data).forEach(server => {
       const node = data[server].nodeInfo;
@@ -116,7 +116,7 @@ class Stats {
     return dataset;
   }
 
-  _showSoftwaresByInstance(data) {
+  #showSoftwaresByInstance(data) {
     const dataset = {};
     Object.keys(data).forEach(server => {
       const node = data[server].nodeInfo;
@@ -130,7 +130,7 @@ class Stats {
     return dataset;
   }
 
-  _showPostsByInstance(data) {
+  #showPostsByInstance(data) {
     const dataset = {};
     Object.keys(data).forEach(server => {
       const node = data[server].nodeInfo;
@@ -142,7 +142,8 @@ class Stats {
 
     return dataset;
   }
-  _showPostsByActiveInstances(trends, data) {
+
+  #showPostsByActiveInstances(trends, data) {
     const filteredTrends = trends.filter(a => "localPosts" in a.data);
     return Object.keys(data).map(server => ({
       server,
@@ -157,7 +158,7 @@ class Stats {
 
   }
 
-  _showMastodonPublicTimeline(data) {
+  #showMastodonPublicTimeline(data) {
     const dataset = {
       public: 0,
       private: 0
@@ -172,7 +173,7 @@ class Stats {
     return dataset;
   }
 
-  _showUserDistribution(data) {
+  #showUserDistribution(data) {
     const dataset = {
       "up to 0": 0,
       "up to 1": 0,
@@ -193,7 +194,7 @@ class Stats {
     return dataset;
   }
 
-  _showRuleDistribution(data) {
+  #showRuleDistribution(data) {
     const dataset = {};
     Object.keys(data).filter(server => data[server].mastodon).forEach(server => {
       let count = 0;
@@ -207,7 +208,7 @@ class Stats {
     return dataset;
   }
 
-  _showRuleWords(data) {
+  #showRuleWords(data) {
     const dataset = {};
     Object.keys(data).filter(server => data[server].mastodon).forEach(server => {
       if (!Array.isArray(data[server].mastodon.rules)) return;
@@ -237,7 +238,7 @@ class Stats {
     return dataset;
   }
 
-  _showActiveUserDistribution(data) {
+  #showActiveUserDistribution(data) {
     const dataset = {
       "up to 0": 0,
       "up to 1": 0,
@@ -258,7 +259,7 @@ class Stats {
     return dataset;
   }
 
-  _showActiveVsInactive(data) {
+  #showActiveVsInactive(data) {
     const dataset = {
       active: 0,
       inactive: 0
@@ -270,13 +271,13 @@ class Stats {
     return dataset;
   }
 
-  _ruleArchive(data) {
+  #ruleArchive(data) {
     const dataset = {};
     Object.keys(data).filter(server => data[server].mastodon && Array.isArray(data[server].mastodon.rules)).forEach(server => dataset[server] = data[server].mastodon.rules);
     return dataset;
   }
 
-  async _showDetectedLanguages(data) {
+  async #showDetectedLanguages(data) {
     const dataset = {};
 
     await Promise.all(Object.keys(data).filter(server => data[server].mastodon && data[server].mastodon.description).map(async server => {
@@ -299,7 +300,7 @@ class Stats {
     return dataset;
   }
 
-  _showLanguages(data) {
+  #showLanguages(data) {
     const dataset = {};
 
     Object.keys(data).filter(server => data[server].mastodon && data[server].mastodon.languages).forEach(async server => {

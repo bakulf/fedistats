@@ -1,59 +1,62 @@
 class Stats {
-  constructor() {
-    this._intl = new Intl.NumberFormat();
+  #intl;
+  #data;
 
-    fetch("./pre.json").then(r => r.json()).then(data => this._showData(data));
+  constructor() {
+    this.#intl = new Intl.NumberFormat();
+
+    fetch("./pre.json").then(r => r.json()).then(data => this.#showData(data));
   }
 
   usersBySoftwareReport() {
-    this._createCanvas();
-    this._renderData(this._data.usersBySoftware, 'modalDoughnut', 'modalReport', false);
+    this.#createCanvas();
+    this.#renderData(this.#data.usersBySoftware, 'modalDoughnut', 'modalReport', false);
     new bootstrap.Modal('#chartModal', {}).show();
   }
 
   activeUsersBySoftwareReport() {
-    this._createCanvas();
-    this._renderData(this._data.activeUsersBySoftware, 'modalDoughnut', 'modalReport', false);
+    this.#createCanvas();
+    this.#renderData(this.#data.activeUsersBySoftware, 'modalDoughnut', 'modalReport', false);
     new bootstrap.Modal('#chartModal', {}).show();
   }
 
   usersByProtocolReport() {
-    this._createCanvas();
-    this._renderData(this._data.usersByProtocol, 'modalDoughnut', 'modalReport', false);
+    this.#createCanvas();
+    this.#renderData(this.#data.usersByProtocol, 'modalDoughnut', 'modalReport', false);
     new bootstrap.Modal('#chartModal', {}).show();
   }
 
   usersByInstanceReport() {
-    this._createCanvas();
-    this._renderData(this._data.usersByInstance, 'modalDoughnut', 'modalReport', false);
+    this.#createCanvas();
+    this.#renderData(this.#data.usersByInstance, 'modalDoughnut', 'modalReport', false);
     new bootstrap.Modal('#chartModal', {}).show();
   }
 
   softwareByInstanceReport() {
-    this._createCanvas();
-    this._renderData(this._data.softwareByInstance, 'modalDoughnut', 'modalReport', false);
+    this.#createCanvas();
+    this.#renderData(this.#data.softwareByInstance, 'modalDoughnut', 'modalReport', false);
     new bootstrap.Modal('#chartModal', {}).show();
   }
 
   rulesWordsReport() {
-    this._createCanvas();
-    this._renderData(this._data.ruleWords, 'modalDoughnut', 'modalReport', false);
+    this.#createCanvas();
+    this.#renderData(this.#data.ruleWords, 'modalDoughnut', 'modalReport', false);
     new bootstrap.Modal('#chartModal', {}).show();
   }
 
   detectedLanguageDistribution() {
-    this._createCanvas();
-    this._renderData(this._data.detectedLanguages, 'modalDoughnut', 'modalReport', false);
+    this.#createCanvas();
+    this.#renderData(this.#data.detectedLanguages, 'modalDoughnut', 'modalReport', false);
     new bootstrap.Modal('#chartModal', {}).show();
   }
 
   languageDistribution() {
-    this._createCanvas();
-    this._renderData(this._data.languages, 'modalDoughnut', 'modalReport', false);
+    this.#createCanvas();
+    this.#renderData(this.#data.languages, 'modalDoughnut', 'modalReport', false);
     new bootstrap.Modal('#chartModal', {}).show();
   }
 
-  _createCanvas() {
+  #createCanvas() {
     const div = document.getElementById("modalCanvas");
     while (div.firstChild) div.firstChild.remove();
 
@@ -62,37 +65,37 @@ class Stats {
     div.appendChild(canvas);
   }
 
-  _showData(data) {
-    this._data = data;
+  #showData(data) {
+    this.#data = data;
 
     document.getElementById("genStats").innerText = new Intl.DateTimeFormat('en-US', {
       dateStyle: 'long',
       timeStyle: 'long',
-    }).format(new Date(this._data.ctime));
+    }).format(new Date(this.#data.ctime));
 
-    document.getElementById("totalUsers").innerText = this._intl.format(this._data.totalUsers);
-    document.getElementById("totalServers").innerText = this._intl.format(this._data.totalServers);
-    document.getElementById("totalMAU").innerText = this._intl.format(this._data.totalMAU);
+    document.getElementById("totalUsers").innerText = this.#intl.format(this.#data.totalUsers);
+    document.getElementById("totalServers").innerText = this.#intl.format(this.#data.totalServers);
+    document.getElementById("totalMAU").innerText = this.#intl.format(this.#data.totalMAU);
 
-    this._renderData(data.usersBySoftware, 'usersBySoftwareDoughnut', 'usersBySoftwareReport', true);
-    this._renderData(data.activeUsersBySoftware, "activeUsersBySoftwareDoughnut", "activeUsersBySoftwareReport", true);
-    this._renderData(data.usersByProtocol, "usersByProtocolDoughnut", "usersByProtocolReport", true);
-    this._renderData(data.usersByInstance, "usersByInstanceDoughnut", "usersByInstanceReport", true);
-    this._renderData(data.softwareByInstance, "softwareByInstanceDoughnut", "softwareByInstanceReport", true);
-    this._renderData(data.mastodonPublicTimeline, "mastodonPublicTimelineDoughnut", "mastodonPublicTimelineReport", false, "bar");
-    this._renderData(data.userDistribution, "userDistributionDoughnut", "userDistributionReport");
-    this._renderData(data.activeUserDistribution, "activeUserDistributionDoughnut", "activeUserDistributionReport");
-    this._renderData(data.activeVsInactive, "activeVsInactiveDoughnut", "activeVsInactiveReport", false, "bar");
-    this._renderData(data.ruleDistribution, "ruleDistributionDoughnut", "ruleDistributionReport");
-    this._renderData(data.ruleWords, "ruleWords", "rulesWordsReport", true, "bar");
-    this._renderData(data.detectedLanguages, "detectedLanguageDistributionLine", "detectedLanguageDistributionReport", true, "bar");
-    this._renderData(data.languages, "languageDistributionLine", "languageDistributionReport", true, "bar");
+    this.#renderData(data.usersBySoftware, 'usersBySoftwareDoughnut', 'usersBySoftwareReport', true);
+    this.#renderData(data.activeUsersBySoftware, "activeUsersBySoftwareDoughnut", "activeUsersBySoftwareReport", true);
+    this.#renderData(data.usersByProtocol, "usersByProtocolDoughnut", "usersByProtocolReport", true);
+    this.#renderData(data.usersByInstance, "usersByInstanceDoughnut", "usersByInstanceReport", true);
+    this.#renderData(data.softwareByInstance, "softwareByInstanceDoughnut", "softwareByInstanceReport", true);
+    this.#renderData(data.mastodonPublicTimeline, "mastodonPublicTimelineDoughnut", "mastodonPublicTimelineReport", false, "bar");
+    this.#renderData(data.userDistribution, "userDistributionDoughnut", "userDistributionReport");
+    this.#renderData(data.activeUserDistribution, "activeUserDistributionDoughnut", "activeUserDistributionReport");
+    this.#renderData(data.activeVsInactive, "activeVsInactiveDoughnut", "activeVsInactiveReport", false, "bar");
+    this.#renderData(data.ruleDistribution, "ruleDistributionDoughnut", "ruleDistributionReport");
+    this.#renderData(data.ruleWords, "ruleWords", "rulesWordsReport", true, "bar");
+    this.#renderData(data.detectedLanguages, "detectedLanguageDistributionLine", "detectedLanguageDistributionReport", true, "bar");
+    this.#renderData(data.languages, "languageDistributionLine", "languageDistributionReport", true, "bar");
 
-    this._showTrends(data.trends);
-    this._showPostTrends(data);
+    this.#showTrends(data.trends);
+    this.#showPostTrends(data);
   }
 
-  _renderData(dataset, id1, id2, round = true, type = "doughnut") {
+  #renderData(dataset, id1, id2, round = true, type = "doughnut") {
     const labels = Object.keys(dataset).sort((a, b) => dataset[a] < dataset[b]);
     let datasets = Object.keys(dataset).map(key => dataset[key]).sort((a, b) => a < b);
     const total = datasets.reduce((partialSum, a) => partialSum + a, 0);
@@ -153,8 +156,8 @@ class Stats {
     }
   }
 
-  async _showTrends(dataset) {
-    this._renderTrends('userTrendsLine', 'User Trends', 'Number of users', dataset.map(a => a.date),
+  async #showTrends(dataset) {
+    this.#renderTrends('userTrendsLine', 'User Trends', 'Number of users', dataset.map(a => a.date),
       [{
         label: "Users",
         data: dataset.map(a => a.totalUsers),
@@ -169,7 +172,7 @@ class Stats {
         tension: 0.4
       }]);
 
-    this._renderTrends('serverTrendsLine', 'Server Trends', 'Number of servers', dataset.map(a => a.date),
+    this.#renderTrends('serverTrendsLine', 'Server Trends', 'Number of servers', dataset.map(a => a.date),
       [{
         label: "Servers",
         data: dataset.map(a => a.totalServers),
@@ -179,7 +182,7 @@ class Stats {
       }]);
   }
 
-  async _showPostTrends(data) {
+  async #showPostTrends(data) {
     const postDataset = data.trends.filter(a => "localPosts" in a);
     const diffPostDataset = [];
     for (let i = 1; i < postDataset.length; ++i) {
@@ -233,10 +236,10 @@ class Stats {
       tension: 0.4
     });
 
-    this._renderTrends('postTrendsLine', 'Post Trends', 'Number of new posts', diffPostDataset.map(a => a.date), trendData);
+    this.#renderTrends('postTrendsLine', 'Post Trends', 'Number of new posts', diffPostDataset.map(a => a.date), trendData);
   }
 
-  _renderTrends(id, title, y_title, labels, datasets) {
+  #renderTrends(id, title, y_title, labels, datasets) {
     const ctx = document.getElementById(id);
     const chart = new Chart(ctx, {
       type: "line",
