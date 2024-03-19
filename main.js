@@ -184,11 +184,37 @@ class Stats {
 
   async #showPostTrends(data) {
     const postDataset = data.trends.filter(a => "localPosts" in a);
+
+    let dateCount = {};
+    let currentDate = postDataset[0].date;
+    for (let i = 1; i < postDataset.length; ++i) {
+      let count = 0;
+      while (currentDate < postDataset[i].date) {
+        var parts = currentDate.split("-");
+        var dt = new Date(parseInt(parts[0], 10),
+          parseInt(parts[1], 10) - 1,
+          parseInt(parts[2], 10));
+        dt.setDate(dt.getDate() + 1);
+
+        const yyyy = dt.getFullYear();
+        let mm = dt.getMonth() + 1; // Months start at 0!
+        let dd = dt.getDate();
+
+        if (dd < 10) dd = '0' + dd;
+        if (mm < 10) mm = '0' + mm;
+
+        currentDate = yyyy + '-' + mm + '-' + dd;
+        count++;
+      }
+
+      dateCount[postDataset[i].date] = count;
+    }
+
     const diffPostDataset = [];
     for (let i = 1; i < postDataset.length; ++i) {
       diffPostDataset.push({
         date: postDataset[i].date,
-        value: postDataset[i].localPosts - postDataset[i - 1].localPosts
+        value: (postDataset[i].localPosts - postDataset[i - 1].localPosts) / dateCount[postDataset[i].date]
       });
     }
 
@@ -203,7 +229,7 @@ class Stats {
         let currentValue = instance.dataset.find(a => a.date === dates[i])?.localPosts || 0;
         instanceDataset.push({
           date: dates[i],
-          value: currentValue - initValue
+          value: (currentValue - initValue) / dateCount[dates[i]]
         });
         initValue = currentValue;
       }
@@ -223,7 +249,7 @@ class Stats {
       let currentValue = data.postsByActiveInstances.reduce((partialSum, a) => partialSum + a.dataset.find(a => a.date === dates[i])?.localPosts || 0, 0);
       instanceDataset.push({
         date: dates[i],
-        value: currentValue - initValue
+        value: (currentValue - initValue) / dateCount[dates[i]]
       });
       initValue = currentValue;
     }
