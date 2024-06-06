@@ -305,11 +305,13 @@ class Stats {
 
     Object.keys(data).filter(server => data[server].mastodon && data[server].mastodon.languages).forEach(async server => {
       for (const language of data[server].mastodon.languages) {
-        const lang = new Intl.DisplayNames(['en'], {
-          type: 'language'
-        }).of(language);
-        if (!dataset[lang]) dataset[lang] = 0;
-        dataset[lang] += 1;
+        try {
+          const lang = new Intl.DisplayNames(['en'], {
+            type: 'language'
+          }).of(language);
+          if (!dataset[lang]) dataset[lang] = 0;
+          dataset[lang] += 1;
+        } catch (e) {}
       }
     });
 
