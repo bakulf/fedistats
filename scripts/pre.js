@@ -6,6 +6,7 @@ class Stats {
     const data = JSON.parse(fs.readFileSync("./LOG.json"));
     const stat = fs.statSync("./LOG.json");
     delete data['egirls.gay'];
+    delete data['good.news'];
 
     const trends = [];
     fs.readdirSync("./old").filter(f => f.endsWith(".json")).forEach(file => {
