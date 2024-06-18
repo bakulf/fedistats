@@ -96,8 +96,8 @@ class Stats {
   }
 
   #renderData(dataset, id1, id2, round = true, type = "doughnut") {
-    const labels = Object.keys(dataset).sort((a, b) => dataset[a] < dataset[b]);
-    let datasets = Object.keys(dataset).map(key => dataset[key]).sort((a, b) => a < b);
+    const labels = Object.keys(dataset).sort((a, b) => dataset[b] - dataset[a]);
+    let datasets = Object.keys(dataset).map(key => dataset[key]).sort((a, b) => b - a);
     const total = datasets.reduce((partialSum, a) => partialSum + a, 0);
 
     if (round && labels.length > 10) {
